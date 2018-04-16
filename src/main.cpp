@@ -40,7 +40,7 @@ void user_input(void){
     the MBED board, including altitude,fuel,isflying,iscrashed
 */
 /*TODO YOU will have to hardwire the IP address in here */
-SocketAddress lander("192.168.4.204",65200);
+SocketAddress lander("192.168.70.35",65200);
 SocketAddress dash("192.168.1.13",65250);
 
 EthernetInterface eth;
@@ -74,6 +74,9 @@ void dashboard(void){
     */
 }
 
+char buffer[512];  //////////////////////////////////////////////////
+SocketAddress source;/////////////////////////////////
+
 int main() {
     acc.enable();
 
@@ -89,6 +92,18 @@ int main() {
 
     printf("lander is on %s/%d\n",lander.get_ip_address(),lander.get_port() );
     printf("dash   is on %s/%d\n",dash.get_ip_address(),dash.get_port() );
+
+sprintf(buffer,"command:!\n throttle: 100\n roll: +0.5");
+    udp.sendto( lander, buffer, strlen(buffer));   //////////////////////////////////////
+    nsapi_size_or_error_t n = udp.recvfrom( &source, buffer, sizeof(buffer));  ///
+    buffer[n]='\0';////
+    printf("from %s\n", source.get_ip_address());///
+    printf("  at %d\n", source.get_port());///
+    printf("data %s\n", buffer);///
+    printf("----\n");///
+
+
+
 
     /* periodic tasks */
     /*TODO call periodic tasks;
